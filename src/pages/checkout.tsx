@@ -4,6 +4,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { stripePromise } from '@/lib/stripeClient';
 import { products, formatPrice } from '@/lib/products';
 import { useRouter } from 'next/router';
+import ShirtMockup from '@/components/ShirtMockup';
 
 const product = products[0];
 
@@ -190,9 +191,9 @@ export default function CheckoutPage() {
       </Head>
 
       <div className="min-h-screen bg-bg py-8 sm:py-12 px-4">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-[1000px] mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-10">
             <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-linkedin-blue uppercase tracking-wide bg-linkedin-light px-3 py-1 rounded-full mb-3">
               Application Form
             </div>
@@ -204,45 +205,53 @@ export default function CheckoutPage() {
             </p>
           </div>
 
-          {/* Order summary card */}
-          <div className="bg-surface border border-border rounded-lg p-5 mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-bold text-sm">{product.name}</div>
-                <div className="text-xs text-muted mt-0.5">Custom print · Free shipping</div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* Product card (Left on Desktop) */}
+            <div className="bg-surface border border-border rounded-lg overflow-hidden sticky top-[72px]">
+              <div className="bg-bg flex items-center justify-center py-10">
+                <ShirtMockup />
               </div>
-              <div className="text-lg font-bold">{formatPrice(product.price)}</div>
+              <div className="p-5 border-t border-border">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h2 className="font-serif text-lg font-bold">{product.name}</h2>
+                    <p className="text-xs text-muted mt-0.5">{product.tagline}</p>
+                  </div>
+                  <span className="text-xl font-bold whitespace-nowrap ml-4">{formatPrice(product.price)}</span>
+                </div>
+                <p className="text-xs text-muted mt-2">Custom print · Free shipping</p>
+              </div>
             </div>
-          </div>
 
-          {/* Checkout form */}
-          <div className="bg-surface border border-border rounded-lg p-6">
-            {!started ? (
-              <PreCheckoutForm
-                onSubmit={initPayment}
-                loading={initializing}
-                error={fetchError}
-              />
-            ) : clientSecret ? (
-              <Elements
-                stripe={stripePromise}
-                options={{
-                  clientSecret,
-                  appearance: {
-                    theme: 'stripe',
-                    variables: {
-                      colorPrimary: '#0a66c2',
-                      fontFamily: "'DM Sans', sans-serif",
-                      borderRadius: '8px',
+            {/* Checkout form (Right on Desktop) */}
+            <div className="bg-surface border border-border rounded-lg p-6">
+              {!started ? (
+                <PreCheckoutForm
+                  onSubmit={initPayment}
+                  loading={initializing}
+                  error={fetchError}
+                />
+              ) : clientSecret ? (
+                <Elements
+                  stripe={stripePromise}
+                  options={{
+                    clientSecret,
+                    appearance: {
+                      theme: 'stripe',
+                      variables: {
+                        colorPrimary: '#0a66c2',
+                        fontFamily: "'DM Sans', sans-serif",
+                        borderRadius: '8px',
+                      },
                     },
-                  },
-                }}
-              >
-                <CheckoutForm />
-              </Elements>
-            ) : (
-              <div className="text-center py-8 text-muted text-sm">Loading payment form...</div>
-            )}
+                  }}
+                >
+                  <CheckoutForm />
+                </Elements>
+              ) : (
+                <div className="text-center py-8 text-muted text-sm">Loading payment form...</div>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -25,7 +25,7 @@ export default function Hero() {
 
       {/* CTA */}
       <Link
-        href="#product"
+        href="/checkout"
         className="inline-block bg-linkedin-blue text-white px-8 py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 mb-3 animate-fade-up-delay-2"
       >
         Submit Your Application →
