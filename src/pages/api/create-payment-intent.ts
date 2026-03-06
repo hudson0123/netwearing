@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { productId, name, email, size } = req.body;
+    const { productId, name, email, size, linkedinUrl, uploadLater } = req.body;
 
     if (!productId || !name || !email || !size) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -28,6 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         customerName: name,
         customerEmail: email,
         size,
+        linkedinUrl: linkedinUrl || '',
+        uploadLater: String(uploadLater || false),
         resumeUploaded: 'false',
         resumeUrl: '',
       },

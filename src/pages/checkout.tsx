@@ -153,7 +153,7 @@ export default function CheckoutPage() {
   const [initializing, setInitializing] = useState(false);
   const [started, setStarted] = useState(false);
 
-  async function initPayment(name: string, email: string, size: string) {
+  async function initPayment(name: string, email: string, size: string, linkedinUrl: string, uploadLater: boolean) {
     setInitializing(true);
     setFetchError('');
 
@@ -166,6 +166,8 @@ export default function CheckoutPage() {
           name,
           email,
           size,
+          linkedinUrl,
+          uploadLater,
         }),
       });
 
@@ -273,17 +275,19 @@ function PreCheckoutForm({
   loading,
   error,
 }: {
-  onSubmit: (name: string, email: string, size: string) => void;
+  onSubmit: (name: string, email: string, size: string, linkedinUrl: string, uploadLater: boolean) => void;
   loading: boolean;
   error: string;
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [size, setSize] = useState('M');
+  const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [uploadLater, setUploadLater] = useState(false);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSubmit(name, email, size);
+    onSubmit(name, email, size, linkedinUrl, uploadLater);
   }
 
   return (
@@ -318,6 +322,38 @@ function PreCheckoutForm({
               placeholder="your.professional@email.com"
               className="w-full border border-border rounded-lg px-4 py-2.5 text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
             />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label htmlFor="pre-linkedin" className={`text-sm font-medium ${uploadLater ? 'text-muted' : 'text-text'}`}>
+                LinkedIn Profile URL
+              </label>
+            </div>
+            <input
+              id="pre-linkedin"
+              type="url"
+              required={!uploadLater}
+              disabled={uploadLater}
+              value={linkedinUrl}
+              onChange={(e) => setLinkedinUrl(e.target.value)}
+              placeholder="https://linkedin.com/in/yourname"
+              className={`w-full border border-border rounded-lg px-4 py-2.5 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-linkedin-blue ${
+                uploadLater ? 'bg-bg/50 border-border/50 text-muted opacity-60' : 'bg-bg'
+              }`}
+            />
+            <div className="mt-2.5 flex items-center gap-2">
+              <input
+                id="pre-upload-later"
+                type="checkbox"
+                checked={uploadLater}
+                onChange={(e) => setUploadLater(e.target.checked)}
+                className="w-4 h-4 rounded border-border text-linkedin-blue focus:ring-linkedin-blue"
+              />
+              <label htmlFor="pre-upload-later" className="text-[0.75rem] text-muted cursor-pointer hover:text-text transition-colors">
+                I'll upload my résumé after payment
+              </label>
+            </div>
           </div>
         </div>
       </div>
