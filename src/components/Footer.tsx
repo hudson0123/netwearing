@@ -1,15 +1,13 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
     <footer className="bg-text text-white/60 py-12 px-6 text-center">
       <div className="max-w-[1000px] mx-auto">
         {/* Logo */}
-        <div className="font-serif text-2xl font-bold text-white mb-1">
-          Netwearing™
-        </div>
         <p className="text-sm mb-6">
-          Dress for the job you'll never get. 🚀
+          Dress for the job you'll never get.
         </p>
 
         {/* Fine print */}

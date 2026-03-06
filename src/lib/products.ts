@@ -12,7 +12,7 @@ export interface Product {
 export const products: Product[] = [
   {
     id: 'resume-shirt',
-    name: 'The Résumé Shirt™',
+    name: 'The Résumé Shirt',
     tagline: 'Your name on the front. Your entire professional history on the back.',
     description:
       'Wear your qualifications to the grocery store, the gym, your ex\'s wedding. The world deserves to know.',

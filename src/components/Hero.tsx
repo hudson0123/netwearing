@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import NextImage from 'next/image';
 
 export default function Hero() {
   return (
-    <section className="bg-surface border-b border-border py-14 sm:py-20 px-6 text-center relative overflow-hidden">
+    <section className="bg-surface border-border py-14 sm:py-20 px-6 text-center relative overflow-hidden">
       {/* LinkedIn-blue accent bar */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-linkedin-blue via-[#70b5f9] to-linkedin-blue" />
 

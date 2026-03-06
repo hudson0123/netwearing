@@ -1,10 +1,10 @@
 import Head from 'next/head';
+import Image from 'next/image';
 import { useState, FormEvent } from 'react';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { stripePromise } from '@/lib/stripeClient';
 import { products, formatPrice } from '@/lib/products';
 import { useRouter } from 'next/router';
-import ShirtMockup from '@/components/ShirtMockup';
 
 const product = products[0];
 
@@ -208,8 +208,16 @@ export default function CheckoutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Product card (Left on Desktop) */}
             <div className="bg-surface border border-border rounded-lg overflow-hidden sticky top-[72px]">
-              <div className="bg-bg flex items-center justify-center py-10">
-                <ShirtMockup />
+              <div className="bg-bg flex items-center justify-center p-8">
+                <div className="relative w-full aspect-[4/3] max-w-[300px]">
+                  <Image 
+                    src="/netwearing-shirt.png" 
+                    alt="Netwearing Shirt" 
+                    fill
+                    className="object-contain"
+                    priority
+                  />
+                </div>
               </div>
               <div className="p-5 border-t border-border">
                 <div className="flex items-start justify-between">

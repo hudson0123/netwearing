@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import ShirtMockup from './ShirtMockup';
 import { products, formatPrice } from '@/lib/products';
 
@@ -6,16 +7,20 @@ export default function ProductSection() {
   const product = products[0];
 
   return (
-    <section id="product" className="bg-surface border-t border-b border-border py-12 px-6">
+    <section id="product" className="bg-surface border-border py-12 px-6">
       <div className="max-w-[1000px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
           {/* Visual */}
-          <div className="bg-bg border border-border rounded flex flex-col items-center justify-center relative overflow-hidden aspect-[3/4]">
-            <div className="absolute top-4 right-4 bg-green text-white text-[0.7rem] font-bold px-2.5 py-0.5 rounded-full">
-              New Drop
+          <div className="bg-bg border border-border rounded flex flex-col items-center justify-center relative overflow-hidden aspect-[4/4] p-4">
+            <div className="relative w-full h-full">
+              <Image 
+                src="/netwearing-shirt.png" 
+                alt="Netwearing Shirt - Front and Back" 
+                fill
+                priority
+              />
             </div>
-            <ShirtMockup />
-            <p className="mt-6 text-xs text-muted text-center px-4">
+            <p className="mt-4 text-[10px] text-muted text-center px-4 leading-tight">
               Front: Your name, bold as your LinkedIn headline.
               <br />
               Back: Your entire résumé. Tiny. Readable. Controversial.
@@ -24,13 +29,6 @@ export default function ProductSection() {
 
           {/* Info */}
           <div className="py-4">
-            {/* Meta tags */}
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xs bg-linkedin-light text-linkedin-blue px-2.5 py-0.5 rounded-full font-semibold">
-                Featured
-              </span>
-            </div>
-
             {/* Name & tagline */}
             <h2 className="font-serif text-3xl font-bold tracking-tight mb-2">
               {product.name}
