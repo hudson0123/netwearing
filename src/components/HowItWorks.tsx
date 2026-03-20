@@ -43,7 +43,7 @@ export default function HowItWorks() {
               </div>
               <div className="font-bold text-base mb-1 text-text">{step.title}</div>
               <p className="text-sm text-muted leading-relaxed">{step.desc}</p>
-              <div className="text-xs text-linkedin-blue italic mt-3 pt-3 border-t border-border">
+              <div className="text-xs text-linkedin-blue italic mt-3 pt-3 border-border">
                 {step.quote}
               </div>
             </div>

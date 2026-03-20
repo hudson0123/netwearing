@@ -33,7 +33,7 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="bg-surface border-t border-b border-border py-12 px-6">
+    <section className="bg-surface  border-b border-border py-12 px-6">
       <div className="max-w-[1000px] mx-auto">
         <div className="text-xs font-bold uppercase tracking-[0.12em] text-muted mb-2">
           What Our Network Is Saying
@@ -69,7 +69,7 @@ export default function Testimonials() {
               <p className="text-sm text-text leading-relaxed mb-3">{t.body}</p>
 
               {/* Reactions */}
-              <div className="flex gap-1.5 items-center text-xs text-muted border-t border-border pt-2.5">
+              <div className="flex gap-1.5 items-center text-xs text-muted border-border pt-2.5">
                 {t.reactions.map((emoji, i) => (
                   <span key={i} className="text-base">{emoji}</span>
                 ))}

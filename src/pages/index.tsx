@@ -12,9 +12,6 @@ export default function Home() {
         <title>Netwearing™ | Dress For The Job You'll Never Get</title>
       </Head>
       <Hero />
-      <ProductSection />
-      <HowItWorks />
-      <Testimonials />
       <FAQ />
     </>
   );

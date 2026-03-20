@@ -10,8 +10,8 @@ export default function Navbar() {
             src="/logo.png" 
             alt="Netwearing Logo" 
             width={120} 
-            height={30} 
-            className="h-40 w-auto mt-3"
+            height={32} 
+            className="h-8 w-auto my-auto"
             priority
           />
         </Link>
