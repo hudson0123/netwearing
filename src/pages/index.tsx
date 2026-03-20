@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Netwearing™ | Dress For The Job You'll Never Get</title>
+        <title>Netwearing</title>
       </Head>
       <Hero />
       <ProductSection />
