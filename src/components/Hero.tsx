@@ -21,7 +21,7 @@ export default function Hero() {
       {/* Subtitle */}
       <p className="text-lg text-muted max-w-lg mx-auto mb-8 leading-relaxed animate-fade-up-delay-1">
         Put your résumé on a shirt. Wear your qualifications. Let your
-        credentials do the networking.
+        outfit do the networking.
       </p>
 
       {/* CTA */}
