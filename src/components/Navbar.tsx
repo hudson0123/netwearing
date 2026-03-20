@@ -5,13 +5,13 @@ export default function Navbar() {
   return (
     <nav className="bg-surface border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center justify-between h-[52px]">
-        <Link href="/" className="flex">
+        <Link href="/" className="flex items-center h-full">
           <Image 
             src="/logo.png" 
             alt="Netwearing Logo" 
             width={120} 
-            height={32} 
-            className="h-8 w-auto my-auto"
+            height={40} 
+            className="h-10 w-auto object-contain"
             priority
           />
         </Link>
