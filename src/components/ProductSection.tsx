@@ -19,7 +19,7 @@ export default function ProductSection() {
                 className="group overflow-hidden"
               >
                 {/* Image */}
-                <div className="flex items-center justify-center p-6 relative aspect-square overflow-hidden">
+                <div className="flex items-center justify-center p-2 relative aspect-square overflow-hidden">
                   <div className="relative w-full h-full">
                     <Image
                       src={product.image}

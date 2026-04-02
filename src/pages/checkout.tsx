@@ -61,10 +61,11 @@ function CheckoutForm({ subtotal, customerName, customerEmail }: { subtotal: num
 
 
 
-      {/* Payment */}
-      <div>
-        <h3 className="font-serif text-lg font-bold mb-4">Payment</h3>
-        <div className="border border-border rounded-lg p-4 bg-surface">
+      <div className="pb-2">
+        <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-muted mb-4 border-b border-border pb-2">
+           Part 2: Application Processing Fee
+        </h3>
+        <div className="border-2 border-border rounded-sm p-4 bg-surface">
           <PaymentElement />
         </div>
       </div>
@@ -80,13 +81,13 @@ function CheckoutForm({ subtotal, customerName, customerEmail }: { subtotal: num
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="w-full bg-linkedin-blue text-white py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"
+        className="w-full bg-text text-bg py-3.5 rounded-sm font-mono text-xs font-bold tracking-widest uppercase hover:bg-linkedin-blue transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-2 border-text hover:border-linkedin-blue"
       >
-        {loading ? 'Processing...' : `Pay ${formatPrice(subtotal)} →`}
+        {loading ? 'Processing Authorization...' : `Submit Application & Pay Fee (${formatPrice(subtotal)})`}
       </button>
 
-      <p className="text-center text-xs text-muted">
-        Your résumé upload happens after payment. One step at a time — just like your career.
+      <p className="text-center text-[10px] text-muted font-mono uppercase mt-4">
+        * Mandatory screening fee is non-refundable. Do not contact HR regarding your application status.
       </p>
     </form>
   );
@@ -142,64 +143,24 @@ export default function CheckoutPage() {
         <title>Checkout — Netwearing™</title>
       </Head>
 
-      <div className="min-h-screen bg-bg py-8 sm:py-12 px-4">
+      <div className="min-h-screen bg-bg py-4 sm:py-6 px-4">
         <div className="max-w-[1000px] mx-auto">
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-linkedin-blue uppercase tracking-wide bg-linkedin-light px-3 py-1 rounded-full mb-3">
-              Application Form
+          <div className="text-center mb-8 border-b border-border pb-6 mt-4">
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold text-muted border border-border px-2 py-0.5 rounded-sm mb-3 tracking-widest">
+              FORM NW-1099
             </div>
-            <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">
-              Submit Your Application
+            <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight mb-2 uppercase">
+              Official Candidate Submission
             </h1>
-            <p className="text-sm text-muted">
-              Complete the form below. No references required. Yet.
+            <p className="text-sm font-medium text-muted max-w-lg mx-auto">
+              Please complete all mandatory fields below. False or misleading information may result in your immediate disqualification from the talent pool.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-            {/* Product card (Left on Desktop) */}
-            <div className="bg-surface border border-border rounded-lg overflow-hidden sticky top-[72px]">
-              <div className="bg-bg flex items-center justify-center p-8">
-                <div className="relative w-full aspect-[4/3] max-w-[300px]">
-                  <Image 
-                    src="/netwearing-shirt.png" 
-                    alt="Netwearing Shirt" 
-                    fill
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-              </div>
-              <div className="p-5 border-t border-border">
-                {items.length > 0 ? (
-                  items.map((item, i) => (
-                    <div key={i} className="flex justify-between text-sm mb-2">
-                       <div>{item.quantity}x {item.product.name} (Size: {item.size})</div>
-                       <div className="font-bold">{formatPrice(item.product.price * item.quantity)}</div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h2 className="font-serif text-lg font-bold">{product.name}</h2>
-                      <p className="text-xs text-muted mt-0.5">{product.tagline}</p>
-                    </div>
-                    <span className="text-xl font-bold whitespace-nowrap ml-4">{formatPrice(product.price)}</span>
-                  </div>
-                )}
-                {items.length > 0 && (
-                  <div className="flex justify-between border-t border-border pt-2 mt-2 font-bold">
-                    <span>Total</span>
-                    <span>{formatPrice(subtotal)}</span>
-                  </div>
-                )}
-                <p className="text-xs text-muted mt-2">Custom print · Free shipping</p>
-              </div>
-            </div>
-
+          <div className="max-w-[600px] mx-auto">
             {/* Checkout form (Right on Desktop) */}
-            <div className="bg-surface border border-border rounded-lg p-6">
+            <div className="bg-surface border-2 border-border shadow-sm rounded-sm p-6 sm:p-8">
               {!started ? (
                 <PreCheckoutForm
                   onSubmit={initPayment}
@@ -256,12 +217,14 @@ function PreCheckoutForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <h3 className="font-serif text-lg font-bold mb-4">Your Details</h3>
-        <div className="space-y-3">
+      <div className="pb-2">
+        <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-muted mb-4 border-b border-border pb-2">
+          Part 1: Identification & Background
+        </h3>
+        <div className="space-y-4">
           <div>
-            <label htmlFor="pre-name" className="block text-sm font-medium text-text mb-1">
-              Full Name
+            <label htmlFor="pre-name" className="block text-xs font-bold text-text mb-1 uppercase tracking-wider">
+              1. Legal Full Name *
             </label>
             <input
               id="pre-name"
@@ -269,13 +232,13 @@ function PreCheckoutForm({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. John Doe, Senior Synergy Officer"
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
+              placeholder="e.g. DOE, JOHN"
+              className="w-full border border-border rounded-sm px-4 py-2.5 text-sm bg-bg focus:outline-none focus:border-linkedin-blue focus:ring-1 focus:ring-linkedin-blue transition-colors"
             />
           </div>
           <div>
-            <label htmlFor="pre-email" className="block text-sm font-medium text-text mb-1">
-              Email
+            <label htmlFor="pre-email" className="block text-xs font-bold text-text mb-1 uppercase tracking-wider">
+              2. Primary Electronic Mail *
             </label>
             <input
               id="pre-email"
@@ -283,15 +246,15 @@ function PreCheckoutForm({
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="your.professional@email.com"
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm bg-bg focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
+              placeholder="applicant@domain.com"
+              className="w-full border border-border rounded-sm px-4 py-2.5 text-sm bg-bg focus:outline-none focus:border-linkedin-blue focus:ring-1 focus:ring-linkedin-blue transition-colors"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label htmlFor="pre-linkedin" className={`text-sm font-medium ${uploadLater ? 'text-muted' : 'text-text'}`}>
-                LinkedIn Profile URL
+              <label htmlFor="pre-linkedin" className={`text-xs font-bold uppercase tracking-wider ${uploadLater ? 'text-muted' : 'text-text'}`}>
+                3. Professional Network URL (LinkedIn) *
               </label>
             </div>
             <input
@@ -301,8 +264,8 @@ function PreCheckoutForm({
               disabled={uploadLater}
               value={linkedinUrl}
               onChange={(e) => setLinkedinUrl(e.target.value)}
-              placeholder="https://linkedin.com/in/yourname"
-              className={`w-full border border-border rounded-lg px-4 py-2.5 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-linkedin-blue ${
+              placeholder="https://linkedin.com/in/..."
+              className={`w-full border border-border rounded-sm px-4 py-2.5 text-sm transition-all focus:outline-none focus:border-linkedin-blue focus:ring-1 focus:ring-linkedin-blue ${
                 uploadLater ? 'bg-bg/50 border-border/50 text-muted opacity-60' : 'bg-bg'
               }`}
             />
@@ -331,9 +294,9 @@ function PreCheckoutForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-linkedin-blue text-white py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        className="w-full bg-text text-bg py-3.5 rounded-sm font-mono text-xs font-bold tracking-widest uppercase hover:bg-linkedin-blue transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer border-2 border-text hover:border-linkedin-blue mt-4"
       >
-        {loading ? 'Setting up...' : 'Continue to Payment →'}
+        {loading ? 'Accessing Secure Gateway...' : 'Initialize Part 2 →'}
       </button>
     </form>
   );
