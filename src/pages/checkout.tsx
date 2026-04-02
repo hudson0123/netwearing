@@ -5,17 +5,15 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { stripePromise } from '@/lib/stripeClient';
 import { products, formatPrice } from '@/lib/products';
 import { useRouter } from 'next/router';
+import { useCart } from '@/lib/CartContext';
 
 const product = products[0];
 
-function CheckoutForm() {
+function CheckoutForm({ subtotal, customerName, customerEmail }: { subtotal: number, customerName: string, customerEmail: string }) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [size, setSize] = useState('M');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -39,8 +37,8 @@ function CheckoutForm() {
         return_url: `${window.location.origin}/confirmation`,
         payment_method_data: {
           billing_details: {
-            name,
-            email,
+            name: customerName,
+            email: customerEmail,
           },
         },
       },
@@ -60,61 +58,8 @@ function CheckoutForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Customer Info */}
-      <div>
-        <h3 className="font-serif text-lg font-bold mb-4">Your Details</h3>
-        <div className="space-y-3">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-text mb-1">
-              Full Name
-            </label>
-            <input
-              id="name"
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. John Doe, Senior Synergy Officer"
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
-            />
-          </div>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-text mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your.professional@email.com"
-              className="w-full border border-border rounded-lg px-4 py-2.5 text-sm bg-surface focus:outline-none focus:ring-2 focus:ring-linkedin-blue"
-            />
-          </div>
-        </div>
-      </div>
 
-      {/* Size Selector */}
-      <div>
-        <h3 className="font-serif text-lg font-bold mb-4">Select Your Size</h3>
-        <div className="grid grid-cols-6 gap-2">
-          {product.sizes.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setSize(s)}
-              className={`py-2.5 rounded-lg text-sm font-semibold transition-all border ${
-                size === s
-                  ? 'bg-linkedin-blue text-white border-linkedin-blue'
-                  : 'bg-surface text-text border-border hover:border-linkedin-blue'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      </div>
+
 
       {/* Payment */}
       <div>
@@ -135,9 +80,9 @@ function CheckoutForm() {
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="w-full bg-linkedin-blue text-white py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+        className="w-full bg-linkedin-blue text-white py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 cursor-pointer"
       >
-        {loading ? 'Processing...' : `Pay ${formatPrice(product.price)} →`}
+        {loading ? 'Processing...' : `Pay ${formatPrice(subtotal)} →`}
       </button>
 
       <p className="text-center text-xs text-muted">
@@ -148,12 +93,18 @@ function CheckoutForm() {
 }
 
 export default function CheckoutPage() {
+  const { items, subtotal } = useCart();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState('');
   const [initializing, setInitializing] = useState(false);
   const [started, setStarted] = useState(false);
 
-  async function initPayment(name: string, email: string, size: string, linkedinUrl: string, uploadLater: boolean) {
+  const [customerName, setCustomerName] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+
+  async function initPayment(name: string, email: string, linkedinUrl: string, uploadLater: boolean) {
+    setCustomerName(name);
+    setCustomerEmail(email);
     setInitializing(true);
     setFetchError('');
 
@@ -162,10 +113,9 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          productId: product.id,
+          items: items.map(i => ({ productId: i.product.id, size: i.size, quantity: i.quantity })),
           name,
           email,
-          size,
           linkedinUrl,
           uploadLater,
         }),
@@ -222,13 +172,28 @@ export default function CheckoutPage() {
                 </div>
               </div>
               <div className="p-5 border-t border-border">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="font-serif text-lg font-bold">{product.name}</h2>
-                    <p className="text-xs text-muted mt-0.5">{product.tagline}</p>
+                {items.length > 0 ? (
+                  items.map((item, i) => (
+                    <div key={i} className="flex justify-between text-sm mb-2">
+                       <div>{item.quantity}x {item.product.name} (Size: {item.size})</div>
+                       <div className="font-bold">{formatPrice(item.product.price * item.quantity)}</div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h2 className="font-serif text-lg font-bold">{product.name}</h2>
+                      <p className="text-xs text-muted mt-0.5">{product.tagline}</p>
+                    </div>
+                    <span className="text-xl font-bold whitespace-nowrap ml-4">{formatPrice(product.price)}</span>
                   </div>
-                  <span className="text-xl font-bold whitespace-nowrap ml-4">{formatPrice(product.price)}</span>
-                </div>
+                )}
+                {items.length > 0 && (
+                  <div className="flex justify-between border-t border-border pt-2 mt-2 font-bold">
+                    <span>Total</span>
+                    <span>{formatPrice(subtotal)}</span>
+                  </div>
+                )}
                 <p className="text-xs text-muted mt-2">Custom print · Free shipping</p>
               </div>
             </div>
@@ -256,7 +221,7 @@ export default function CheckoutPage() {
                     },
                   }}
                 >
-                  <CheckoutForm />
+                  <CheckoutForm subtotal={subtotal} customerName={customerName} customerEmail={customerEmail} />
                 </Elements>
               ) : (
                 <div className="text-center py-8 text-muted text-sm">Loading payment form...</div>
@@ -275,19 +240,18 @@ function PreCheckoutForm({
   loading,
   error,
 }: {
-  onSubmit: (name: string, email: string, size: string, linkedinUrl: string, uploadLater: boolean) => void;
+  onSubmit: (name: string, email: string, linkedinUrl: string, uploadLater: boolean) => void;
   loading: boolean;
   error: string;
 }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [size, setSize] = useState('M');
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [uploadLater, setUploadLater] = useState(false);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    onSubmit(name, email, size, linkedinUrl, uploadLater);
+    onSubmit(name, email, linkedinUrl, uploadLater);
   }
 
   return (
@@ -348,7 +312,7 @@ function PreCheckoutForm({
                 type="checkbox"
                 checked={uploadLater}
                 onChange={(e) => setUploadLater(e.target.checked)}
-                className="w-4 h-4 rounded border-border text-linkedin-blue focus:ring-linkedin-blue"
+                className="w-4 h-4 rounded border-border text-linkedin-blue focus:ring-linkedin-blue cursor-pointer"
               />
               <label htmlFor="pre-upload-later" className="text-[0.75rem] text-muted cursor-pointer hover:text-text transition-colors">
                 I'll upload my résumé after payment
@@ -358,25 +322,7 @@ function PreCheckoutForm({
         </div>
       </div>
 
-      <div>
-        <h3 className="font-serif text-lg font-bold mb-4">Select Your Size</h3>
-        <div className="grid grid-cols-6 gap-2">
-          {product.sizes.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setSize(s)}
-              className={`py-2.5 rounded-lg text-sm font-semibold transition-all border ${
-                size === s
-                  ? 'bg-linkedin-blue text-white border-linkedin-blue'
-                  : 'bg-bg text-text border-border hover:border-linkedin-blue'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      </div>
+
 
       {error && (
         <div className="bg-red/10 text-red text-sm px-4 py-3 rounded-lg">{error}</div>
@@ -385,7 +331,7 @@ function PreCheckoutForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-linkedin-blue text-white py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-linkedin-blue text-white py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? 'Setting up...' : 'Continue to Payment →'}
       </button>

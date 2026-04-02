@@ -8,33 +8,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { productId, name, email, size, linkedinUrl, uploadLater } = req.body;
+    const { items, name, email, linkedinUrl, uploadLater } = req.body;
 
-    if (!productId || !name || !email || !size) {
+    if (!items || !items.length || !name || !email) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const product = getProduct(productId);
-    if (!product) {
-      return res.status(400).json({ error: 'Invalid product' });
+    let totalAmount = 0;
+    const summaries = [];
+
+    for (const item of items) {
+      const product = getProduct(item.productId);
+      if (!product) {
+        return res.status(400).json({ error: `Invalid product` });
+      }
+      totalAmount += product.price * item.quantity;
+      summaries.push(`${product.name} (Size: ${item.size}, Qty: ${item.quantity})`);
     }
 
+    const sizes = items.map((i: any) => i.size).join(', ');
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: product.price,
+      amount: totalAmount,
       currency: 'usd',
       metadata: {
-        productId: product.id,
-        productName: product.name,
         customerName: name,
         customerEmail: email,
-        size,
+        sizes: sizes,
         linkedinUrl: linkedinUrl || '',
         uploadLater: String(uploadLater || false),
         resumeUploaded: 'false',
         resumeUrl: '',
       },
       receipt_email: email,
-      description: `${product.name} — Size ${size}`,
+      description: summaries.join(' | '),
     });
 
     return res.status(200).json({

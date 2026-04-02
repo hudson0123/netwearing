@@ -55,7 +55,7 @@ export default function FAQ() {
             >
               <button
                 onClick={() => toggle(i)}
-                className="w-full px-5 py-4 text-left text-sm font-semibold text-text flex justify-between items-center hover:bg-bg transition-colors"
+                className="w-full px-5 py-4 text-left text-sm font-semibold text-text flex justify-between items-center hover:bg-bg transition-colors cursor-pointer"
               >
                 {faq.question}
                 <span

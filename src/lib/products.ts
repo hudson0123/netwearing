@@ -7,6 +7,7 @@ export interface Product {
   sizes: string[];
   skills: string[];
   requiresUpload: boolean;
+  image: string;
 }
 
 export const products: Product[] = [
@@ -16,8 +17,8 @@ export const products: Product[] = [
     tagline: 'Your name on the front. Your entire professional history on the back.',
     description:
       'Wear your qualifications to the grocery store, the gym, your ex\'s wedding. The world deserves to know.',
-    price: 5200, // $52.00 — TBD
-    sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+    price: 5200, // $52.00
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     skills: [
       'Leadership',
       'Synergy',
@@ -28,6 +29,7 @@ export const products: Product[] = [
       'Results-Driven',
     ],
     requiresUpload: true,
+    image: '/netwearing-shirt.png',
   },
 ];
 
@@ -36,5 +38,5 @@ export function getProduct(id: string): Product | undefined {
 }
 
 export function formatPrice(cents: number): string {
-  return `$${(cents / 100).toFixed(0)}`;
+  return `$${(cents / 100).toFixed(2)}`;
 }

@@ -13,7 +13,7 @@ export default function Hero() {
       </div>
 
       {/* Headline */}
-      <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight text-text max-w-3xl mx-auto mb-5 animate-fade-up">
+      <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-bold leading-[1.1] tracking-tight text-text max-w-3xl mx-auto mb-5 animate-fade-up">
         Dress for the job<br />
         you'll <em className="italic text-linkedin-blue">never</em> get.
       </h1>
@@ -27,7 +27,7 @@ export default function Hero() {
       {/* CTA */}
       <Link
         href="/checkout"
-        className="inline-block bg-linkedin-blue text-white px-8 py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 mb-3 animate-fade-up-delay-2"
+        className="inline-block bg-linkedin-blue text-white px-8 py-3.5 rounded-full font-semibold text-base hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 mb-3 animate-fade-up-delay-2 cursor-pointer"
       >
         Submit Your Application →
       </Link>
