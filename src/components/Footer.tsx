@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -7,7 +5,7 @@ export default function Footer() {
       <div className="max-w-[1000px] mx-auto">
         {/* Logo */}
         <p className="text-sm mb-6">
-          Dress for the job you'll never get.
+          Dress for the job you&apos;ll never get.
         </p>
 
         {/* Fine print */}

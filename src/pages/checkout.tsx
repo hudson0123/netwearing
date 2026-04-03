@@ -1,13 +1,10 @@
 import Head from 'next/head';
-import Image from 'next/image';
 import { useState, FormEvent } from 'react';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { stripePromise } from '@/lib/stripeClient';
-import { products, formatPrice } from '@/lib/products';
+import { formatPrice } from '@/lib/products';
 import { useRouter } from 'next/router';
 import { useCart } from '@/lib/CartContext';
-
-const product = products[0];
 
 function CheckoutForm({ subtotal, customerName, customerEmail }: { subtotal: number, customerName: string, customerEmail: string }) {
   const stripe = useStripe();
@@ -278,7 +275,7 @@ function PreCheckoutForm({
                 className="w-4 h-4 rounded border-border text-linkedin-blue focus:ring-linkedin-blue cursor-pointer"
               />
               <label htmlFor="pre-upload-later" className="text-[0.75rem] text-muted cursor-pointer hover:text-text transition-colors">
-                I'll upload my résumé after payment
+                I&apos;ll upload my résumé after payment
               </label>
             </div>
           </div>

@@ -2,12 +2,24 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/lib/CartContext';
 import { formatPrice } from '@/lib/products';
+import { useEffect } from 'react';
 
 const FREE_SHIPPING_THRESHOLD = 10000; // $100.00 in cents
 
 export default function SidebarCart() {
   const { items, isOpen, setIsOpen, removeFromCart, updateQuantity, subtotal } =
     useCart();
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const amountToFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
   const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
@@ -146,7 +158,7 @@ export default function SidebarCart() {
               }`}
             >
               {hasFreeShipping
-                ? "🎉 You've unlocked free shipping!"
+                ? "🎉 You&apos;ve unlocked free shipping!"
                 : `Add ${formatPrice(amountToFreeShipping)} more to unlock free shipping.`}
             </div>
 

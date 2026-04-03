@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       summaries.push(`${product.name} (Size: ${String(item.size).slice(0, 5)}, Qty: ${item.quantity})`);
     }
 
-    const sizes = items.map((i: any) => String(i.size).slice(0,5)).join(', ').substring(0, 499);
+    const sizes = items.map((i: { size: string }) => String(i.size).slice(0,5)).join(', ').substring(0, 499);
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount,
