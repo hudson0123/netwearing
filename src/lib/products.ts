@@ -17,7 +17,7 @@ export const products: Product[] = [
     tagline: 'Your name on the front. Your entire professional history on the back.',
     description:
       'Wear your qualifications to the grocery store, the gym, your ex\'s wedding. The world deserves to know.',
-    price: 5200, // $52.00
+    price: 2999, // $29.99
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     skills: [
       'Leadership',

@@ -10,23 +10,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { items, name, email, linkedinUrl, uploadLater } = req.body;
 
-    if (!items || !items.length || !name || !email) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!items || !Array.isArray(items) || items.length === 0 || items.length > 50) {
+      return res.status(400).json({ error: 'Invalid items payload' });
+    }
+
+    if (!name || typeof name !== 'string' || name.length > 200 || !email || typeof email !== 'string' || email.length > 200) {
+      return res.status(400).json({ error: 'Missing or invalid required fields' });
     }
 
     let totalAmount = 0;
     const summaries = [];
 
     for (const item of items) {
+      if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
+        return res.status(400).json({ error: 'Invalid quantity' });
+      }
+
       const product = getProduct(item.productId);
       if (!product) {
         return res.status(400).json({ error: `Invalid product` });
       }
       totalAmount += product.price * item.quantity;
-      summaries.push(`${product.name} (Size: ${item.size}, Qty: ${item.quantity})`);
+      summaries.push(`${product.name} (Size: ${String(item.size).slice(0, 5)}, Qty: ${item.quantity})`);
     }
 
-    const sizes = items.map((i: any) => i.size).join(', ');
+    const sizes = items.map((i: any) => String(i.size).slice(0,5)).join(', ').substring(0, 499);
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmount,
