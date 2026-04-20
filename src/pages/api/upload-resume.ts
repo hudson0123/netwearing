@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { put } from '@vercel/blob';
+import { Resend } from 'resend';
 import { stripe } from '@/lib/stripe';
 
 export const config = {
@@ -7,6 +7,8 @@ export const config = {
     bodyParser: false,
   },
 };
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -39,22 +41,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Missing orderId or file' });
     }
 
-    // Upload to Vercel Blob
-    const blob = await put(`resumes/${orderId}/${filePart.filename}`, filePart.data, {
-      access: 'public',
-      contentType: filePart.contentType || 'application/pdf',
+    // Send email via Resend
+    const adminEmail = process.env.ADMIN_EMAIL;
+    if (!adminEmail) {
+      throw new Error('ADMIN_EMAIL is not configured in environment variables');
+    }
+
+    await resend.emails.send({
+      from: 'Netwearing System <onboarding@resend.dev>',
+      to: adminEmail,
+      subject: `New Résumé Upload: Order ${orderId}`,
+      html: `<p>A candidate has uploaded their qualifications for order ID: <strong>${orderId}</strong>.</p><p>Please find the attached document.</p>`,
+      attachments: [
+        {
+          filename: filePart.filename || 'resume.pdf',
+          content: filePart.data,
+        },
+      ],
     });
 
-    // Update Stripe PaymentIntent metadata with resume URL
+    // Update Stripe PaymentIntent metadata securely
     await stripe.paymentIntents.update(orderId, {
       metadata: {
         resumeUploaded: 'true',
-        resumeUrl: blob.url,
         resumeFilename: filePart.filename || 'resume',
       },
     });
 
-    return res.status(200).json({ url: blob.url });
+    return res.status(200).json({ success: true });
   } catch (err: unknown) {
     console.error('Upload error:', err);
     const message = err instanceof Error ? err.message : 'Upload failed';

@@ -1,22 +1,27 @@
 import Image from 'next/image';
-import { products, formatPrice } from '@/lib/products';
+import { useState } from 'react';
+import { products, formatPrice, Product } from '@/lib/products';
 import { useCart } from '@/lib/CartContext';
+import ProductModal from './ProductModal';
 
 
 export default function ProductSection() {
   const { addToCart } = useCart();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   return (
     <section id="product" className="bg-bg py-12 px-6">
       <div className="max-w-[1200px] mx-auto">
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex justify-center">
+          <div className="w-full max-w-md">
           {products.map((product) => {
             return (
               <div
                 key={product.id}
-                className="group overflow-hidden"
+                className="group overflow-hidden cursor-pointer"
+                onClick={() => setSelectedProduct(product)}
               >
                 {/* Image */}
                 <div className="flex items-center justify-center p-2 relative aspect-square overflow-hidden">
@@ -44,7 +49,10 @@ export default function ProductSection() {
                     {product.sizes.map((size) => (
                       <button
                         key={size}
-                        onClick={() => addToCart(product.id, size)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(product.id, size);
+                        }}
                         className="px-4 py-2 text-sm font-bold bg-linkedin-blue text-white rounded hover:bg-linkedin-dark transition-all hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                         aria-label={`Add ${size} to cart`}
                       >
@@ -57,7 +65,15 @@ export default function ProductSection() {
             );
           })}
         </div>
+        </div>
       </div>
+
+      {/* Product Detail Modal */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={selectedProduct !== null}
+        onClose={() => setSelectedProduct(null)}
+      />
     </section>
   );
 }

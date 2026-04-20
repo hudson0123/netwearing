@@ -82,10 +82,6 @@ function CheckoutForm({ subtotal, customerName, customerEmail }: { subtotal: num
       >
         {loading ? 'Processing Authorization...' : `Submit Application & Pay Fee (${formatPrice(subtotal)})`}
       </button>
-
-      <p className="text-center text-[10px] text-muted font-mono uppercase mt-4">
-        * Mandatory screening fee is non-refundable. Do not contact HR regarding your application status.
-      </p>
     </form>
   );
 }
@@ -275,7 +271,7 @@ function PreCheckoutForm({
                 className="w-4 h-4 rounded border-border text-linkedin-blue focus:ring-linkedin-blue cursor-pointer"
               />
               <label htmlFor="pre-upload-later" className="text-[0.75rem] text-muted cursor-pointer hover:text-text transition-colors">
-                I&apos;ll upload my résumé after payment
+                I'll upload my résumé after payment
               </label>
             </div>
           </div>

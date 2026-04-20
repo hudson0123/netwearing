@@ -4,7 +4,7 @@ import { useCart } from '@/lib/CartContext';
 import { formatPrice } from '@/lib/products';
 import { useEffect } from 'react';
 
-const FREE_SHIPPING_THRESHOLD = 10000; // $100.00 in cents
+const FREE_SHIPPING_THRESHOLD = 0; // Temporarily set to $0.00 in cents for all orders
 
 export default function SidebarCart() {
   const { items, isOpen, setIsOpen, removeFromCart, updateQuantity, subtotal } =
@@ -158,7 +158,7 @@ export default function SidebarCart() {
               }`}
             >
               {hasFreeShipping
-                ? "🎉 You&apos;ve unlocked free shipping!"
+                ? " You've unlocked free shipping!"
                 : `Add ${formatPrice(amountToFreeShipping)} more to unlock free shipping.`}
             </div>
 
