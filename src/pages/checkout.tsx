@@ -88,7 +88,7 @@ function CheckoutForm({
            Part 2: Application Processing Fee
         </h3>
         <div className="border-2 border-border rounded-sm p-4 bg-surface">
-          <PaymentElement options={{ fields: { shipping: 'never' } }} />
+          <PaymentElement options={{ fields: { shipping: 'never' } } as any} />
         </div>
       </div>
 
