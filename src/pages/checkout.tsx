@@ -449,7 +449,7 @@ function PreCheckoutForm({
       {/* Part 1b: Shipping Address */}
       <div className="pb-2">
         <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-muted mb-4 border-b border-border pb-2">
-          Part 1b: Physical Deployment Address
+          Part 1b: Shipping Address
         </h3>
         <p className="text-[0.7rem] text-muted mb-4 italic leading-tight">
           Required for physical delivery of your credentials. P.O. Boxes not accepted. Our manufacturing facility requires precise geographic data.
