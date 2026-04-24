@@ -18,7 +18,7 @@ export async function sendOrderConfirmationEmail({
   evidenceValue?: string;
 }) {
   const { data, error } = await resend.emails.send({
-    from: 'Netwearing™ Recruitment <info@netwearing.com>',
+    from: 'Netwearing™ Recruitment <recruitment@upload.netwearing.com>',
     to: [to],
     subject: `APPLICATION RECEIVED: Reference #${orderId.slice(-8).toUpperCase()}`,
     html: `

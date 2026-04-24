@@ -47,12 +47,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const orderId = parts.find((p) => p.name === 'orderId')?.value?.trim();
     const filePart = parts.find((p) => p.name === 'file');
 
-    if (!orderId || !filePart || !filePart.data) {
-      console.log('Upload Route: Error - Missing orderId or file part');
-      return res.status(400).json({ error: 'Missing orderId or file' });
-    }
-
     console.log(`Upload Route: Processing order ${orderId}, file ${filePart.filename}`);
+
+    // Fetch customer info from Stripe to include in the internal email
+    const paymentIntent = await stripe.paymentIntents.retrieve(orderId);
+    const meta = paymentIntent.metadata || {};
+    const customerName = meta.customerName || 'Unknown Candidate';
+    const customerEmail = meta.customerEmail || 'Unknown Email';
+    const linkedinUrl = meta.linkedinUrl || 'Not provided';
+    const shippingInfo = `
+      Address: ${meta.shipLine1 || ''} ${meta.shipLine2 || ''}
+      City: ${meta.shipCity || ''}, ${meta.shipState || ''} ${meta.shipPostalCode || ''}
+      Country: ${meta.shipCountry || ''}
+    `;
 
     // Send email via Resend
     const adminEmail = process.env.ADMIN_EMAIL;
@@ -60,12 +67,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw new Error('ADMIN_EMAIL is not configured');
     }
 
-    console.log('Upload Route: Sending email via Resend...');
+    console.log(`Upload Route: Sending comprehensive docket to ${adminEmail}...`);
     await resend.emails.send({
-      from: 'Netwearing System <onboarding@resend.dev>',
+      from: 'Netwearing System <system@upload.netwearing.com>',
       to: adminEmail,
-      subject: `New Résumé Upload: Order ${orderId}`,
-      html: `<p>A candidate has uploaded their qualifications for order ID: <strong>${orderId}</strong>.</p><p>Please find the attached document.</p>`,
+      subject: `[DOCKET] New Candidate Materialization: ${customerName}`,
+      html: `
+        <div style="font-family: sans-serif; line-height: 1.5; color: #333;">
+          <h2 style="border-bottom: 1px solid #ccc; padding-bottom: 10px;">New Candidate Submission</h2>
+          <p><strong>Order ID:</strong> ${orderId}</p>
+          <hr />
+          <p><strong>Candidate Name:</strong> ${customerName}</p>
+          <p><strong>Contact Email:</strong> ${customerEmail}</p>
+          <p><strong>LinkedIn Profile:</strong> ${linkedinUrl}</p>
+          <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 0; font-weight: bold;">Shipping Information:</p>
+            <pre style="margin: 5px 0;">${shippingInfo}</pre>
+          </div>
+          <p>The candidate's résumé is attached to this email.</p>
+        </div>
+      `,
       attachments: [
         {
           filename: filePart.filename || 'resume.pdf',
