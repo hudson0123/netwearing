@@ -47,7 +47,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const orderId = parts.find((p) => p.name === 'orderId')?.value?.trim();
     const filePart = parts.find((p) => p.name === 'file');
 
-    console.log(`Upload Route: Processing order ${orderId}, file ${filePart.filename}`);
+    if (!orderId || !filePart || !filePart.data) {
+      console.log('Upload Route: Error - Missing orderId or file part');
+      return res.status(400).json({ error: 'Missing orderId or file' });
+    }
+
+    console.log(`Upload Route: Processing order ${orderId}, file ${filePart.filename || 'unknown'}`);
 
     // Fetch customer info from Stripe to include in the internal email
     const paymentIntent = await stripe.paymentIntents.retrieve(orderId);
