@@ -7,7 +7,7 @@ export interface Product {
   sizes: string[];
   skills: string[];
   requiresUpload: boolean;
-  image: string;
+  images: string[];
 }
 
 export const products: Product[] = [
@@ -15,8 +15,7 @@ export const products: Product[] = [
     id: 'resume-shirt',
     name: 'The Résumé Shirt',
     tagline: 'Your name on the front. Your entire professional history on the back.',
-    description:
-      'Wear your qualifications to the grocery store, the gym, your ex\'s wedding. The world deserves to know.',
+    description: '',
     price: 2999, // $29.99
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     skills: [
@@ -29,7 +28,7 @@ export const products: Product[] = [
       'Results-Driven',
     ],
     requiresUpload: true,
-    image: '/netwearing-shirt.png',
+    images: ['/netwearing-shirt.png', '/netwearing-shirt-back.png'],
   },
 ];
 

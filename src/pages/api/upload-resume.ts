@@ -5,6 +5,7 @@ import { stripe } from '@/lib/stripe';
 export const config = {
   api: {
     bodyParser: false,
+    sizeLimit: '10mb',
   },
 };
 
@@ -87,45 +88,62 @@ interface MultipartPart {
 function parseMultipart(body: Buffer, boundary: string): MultipartPart[] {
   const parts: MultipartPart[] = [];
   const boundaryBuffer = Buffer.from(`--${boundary}`);
-  const bodyStr = body.toString('binary');
-  const sections = bodyStr.split(boundaryBuffer.toString('binary'));
-
-  for (const section of sections) {
-    if (section.trim() === '' || section.trim() === '--') continue;
-
-    const headerEnd = section.indexOf('\r\n\r\n');
-    if (headerEnd === -1) continue;
-
-    const headerStr = section.substring(0, headerEnd);
-    const dataStr = section.substring(headerEnd + 4);
-
-    // Remove trailing \r\n
-    const cleanData = dataStr.endsWith('\r\n')
-      ? dataStr.substring(0, dataStr.length - 2)
-      : dataStr;
+  
+  let start = 0;
+  while (start < body.length) {
+    const boundaryIndex = body.indexOf(boundaryBuffer, start);
+    if (boundaryIndex === -1) break;
+    
+    const sectionStart = boundaryIndex + boundaryBuffer.length;
+    let sectionEnd = body.indexOf(boundaryBuffer, sectionStart);
+    if (sectionEnd === -1) {
+        // Check for closing boundary
+        const closingBoundary = Buffer.from(`--${boundary}--`);
+        const closeIndex = body.indexOf(closingBoundary, start);
+        if (closeIndex !== -1) sectionEnd = closeIndex;
+        else break;
+    }
+    
+    const section = body.slice(sectionStart, sectionEnd);
+    if (section.length === 0) {
+        start = sectionEnd;
+        continue;
+    }
+    
+    // Find header-body separator (\r\n\r\n)
+    const separator = Buffer.from('\r\n\r\n');
+    const separatorIndex = section.indexOf(separator);
+    if (separatorIndex === -1) {
+        start = sectionEnd;
+        continue;
+    }
+    
+    const headerStr = section.slice(0, separatorIndex).toString();
+    const data = section.slice(separatorIndex + 4);
+    
+    // Clean up trailing \r\n from data (multipart spec)
+    const cleanData = data.length >= 2 && data[data.length-2] === 0x0D && data[data.length-1] === 0x0A
+        ? data.slice(0, data.length - 2)
+        : data;
 
     const part: MultipartPart = {};
-
-    // Parse Content-Disposition
     const nameMatch = headerStr.match(/name="([^"]+)"/);
     if (nameMatch) part.name = nameMatch[1];
 
     const filenameMatch = headerStr.match(/filename="([^"]+)"/);
     if (filenameMatch) part.filename = filenameMatch[1];
 
-    // Parse Content-Type
     const ctMatch = headerStr.match(/Content-Type:\s*(.+)/i);
     if (ctMatch) part.contentType = ctMatch[1].trim();
 
     if (part.filename) {
-      // File field — store as Buffer
-      part.data = Buffer.from(cleanData, 'binary');
+      part.data = cleanData;
     } else {
-      // Text field
-      part.value = cleanData;
+      part.value = cleanData.toString();
     }
 
     parts.push(part);
+    start = sectionEnd;
   }
 
   return parts;

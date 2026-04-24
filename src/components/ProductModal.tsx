@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Product, formatPrice } from '@/lib/products';
 import { useCart } from '@/lib/CartContext';
 
@@ -11,6 +11,14 @@ interface ProductModalProps {
 
 export default function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   const { addToCart } = useCart();
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  // Reset image index when modal opens with a new product
+  useEffect(() => {
+    if (isOpen) {
+      setActiveImageIndex(0);
+    }
+  }, [isOpen, product]);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -40,6 +48,16 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
     onClose();
   };
 
+  const nextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveImageIndex((prev) => (prev + 1) % product.images.length);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveImageIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+  };
+
   return (
     <>
       {/* Overlay */}
@@ -59,7 +77,7 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-bg/80 hover:bg-bg text-text transition-colors text-lg font-bold cursor-pointer"
+            className="absolute top-4 right-4 z-20 w-9 h-9 flex items-center justify-center rounded-full bg-bg/80 hover:bg-bg text-text transition-colors text-lg font-bold cursor-pointer"
             aria-label="Close product details"
           >
             ✕
@@ -67,16 +85,55 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
 
           <div className="md:flex">
             {/* Image Side */}
-            <div className="md:w-1/2 bg-bg flex items-center justify-center p-6 md:p-10 md:rounded-l-xl">
-              <div className="relative w-full aspect-square max-w-[360px]">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-contain"
-                  priority
-                />
+            <div className="md:w-1/2 bg-bg flex flex-col items-center justify-center p-6 md:p-10 md:rounded-l-xl relative group/slider">
+              <div className="relative w-full aspect-square max-w-[360px] z-0">
+                {product.images.map((img, idx) => (
+                  <Image
+                    key={img + idx}
+                    src={img}
+                    alt={`${product.name} - image ${idx + 1}`}
+                    fill
+                    className={`object-contain transition-opacity duration-700 ease-in-out ${
+                      idx === activeImageIndex ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    priority={idx === 0}
+                  />
+                ))}
               </div>
+
+              {/* Slider Controls */}
+              {product.images.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-surface/80 hover:bg-surface text-text shadow-md transition-all md:opacity-0 md:group-hover/slider:opacity-100 cursor-pointer z-10"
+                    aria-label="Previous image"
+                  >
+                    ←
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-surface/80 hover:bg-surface text-text shadow-md transition-all md:opacity-0 md:group-hover/slider:opacity-100 cursor-pointer z-10"
+                    aria-label="Next image"
+                  >
+                    →
+                  </button>
+
+                  {/* Dots */}
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {product.images.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex(i); }}
+                        className={`w-2 h-2 rounded-full transition-colors cursor-pointer ${
+                          i === activeImageIndex ? 'bg-linkedin-blue' : 'bg-border hover:bg-muted'
+                        }`}
+                        aria-label={`Go to image ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Details Side */}
@@ -140,3 +197,4 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
     </>
   );
 }
+

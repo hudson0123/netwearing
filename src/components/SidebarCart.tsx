@@ -4,8 +4,6 @@ import { useCart } from '@/lib/CartContext';
 import { formatPrice } from '@/lib/products';
 import { useEffect } from 'react';
 
-const FREE_SHIPPING_THRESHOLD = 0; // Temporarily set to $0.00 in cents for all orders
-
 export default function SidebarCart() {
   const { items, isOpen, setIsOpen, removeFromCart, updateQuantity, subtotal } =
     useCart();
@@ -20,9 +18,6 @@ export default function SidebarCart() {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
-
-  const amountToFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
-  const hasFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
 
   return (
     <>
@@ -68,9 +63,9 @@ export default function SidebarCart() {
                 <div key={`${item.product.id}-${item.size}-${index}`} className="px-5 py-4 flex gap-4">
                   {/* Thumbnail */}
                   <div className="w-16 h-16 bg-bg rounded border border-border flex items-center justify-center shrink-0 overflow-hidden relative">
-                    {item.product.image ? (
+                    {item.product.images && item.product.images.length > 0 ? (
                       <Image
-                        src={item.product.image}
+                        src={item.product.images[0]}
                         alt={item.product.name}
                         fill
                         className="object-contain p-1"
@@ -139,28 +134,25 @@ export default function SidebarCart() {
         {/* Footer (only when items exist) */}
         {items.length > 0 && (
           <div className="border-t border-border px-5 py-4 shrink-0 space-y-3">
-            {/* Subtotal */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold">Subtotal</span>
-              <span className="text-base font-bold">{formatPrice(subtotal)}</span>
+            {/* Price Breakdown */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted">Subtotal</span>
+                <span className="text-sm font-bold">{formatPrice(subtotal)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted">Shipping</span>
+                <span className="text-sm font-bold text-green uppercase tracking-wide">FREE</span>
+              </div>
+              <div className="pt-2 border-t border-border flex items-center justify-between">
+                <span className="text-base font-bold">Total</span>
+                <span className="text-lg font-bold text-linkedin-blue">{formatPrice(subtotal)}</span>
+              </div>
             </div>
 
-            <p className="text-xs text-muted">
-              Shipping &amp; taxes calculated at checkout
+            <p className="text-[10px] text-muted leading-tight">
+              Sales tax and candidate processing fees included in price. Physical credentials will be dispatched via secure courier to your primary deployment address.
             </p>
-
-            {/* Free shipping banner */}
-            <div
-              className={`text-xs font-semibold px-4 py-3 rounded-md border-2 border-dashed text-center ${
-                hasFreeShipping
-                  ? 'bg-green/10 border-green text-green'
-                  : 'bg-linkedin-light border-linkedin-blue text-linkedin-blue'
-              }`}
-            >
-              {hasFreeShipping
-                ? " You've unlocked free shipping!"
-                : `Add ${formatPrice(amountToFreeShipping)} more to unlock free shipping.`}
-            </div>
 
             {/* Checkout */}
             <Link

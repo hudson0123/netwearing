@@ -25,41 +25,15 @@ export default function ConfirmationPage() {
           <h1 className="font-serif text-3xl font-bold tracking-tight mb-2">
             Exciting news regarding your application 🎉
           </h1>
-          <p className="text-muted text-sm mb-8 max-w-sm mx-auto leading-relaxed">
-            Your order has been received and is currently under review by our team.
-            We will be in touch within 48 hours with next steps. We appreciate your
-            interest and look forward to moving this process forward.
+          <p className="text-muted text-sm mb-12 max-w-sm mx-auto leading-relaxed">
+            Your credentials have been successfully received and are currently under review.
+            We will be in touch within 48 hours with next steps regarding your materialization.
           </p>
-
-          {/* Upload CTA */}
-          <div className="bg-surface border border-border rounded-lg p-6 mb-6">
-            <h2 className="font-serif text-xl font-bold mb-2">
-              One more thing — your qualifications.
-            </h2>
-            <p className="text-sm text-muted mb-4">
-              Upload your résumé so we can design your shirt. Think of it as the
-              final round of the interview process. But this time, you actually get
-              something out of it.
-            </p>
-            {paymentIntentId ? (
-              <Link
-                href={`/upload/${paymentIntentId}`}
-                className="inline-block bg-linkedin-blue text-white px-8 py-3 rounded-full font-semibold text-sm hover:bg-linkedin-dark transition-all hover:-translate-y-0.5"
-              >
-                Attach Your Qualifications →
-              </Link>
-            ) : (
-              <p className="text-xs text-muted italic">
-                Check your email for your upload link, or contact us if you need
-                help.
-              </p>
-            )}
-          </div>
 
           {/* Back to home */}
           <Link
             href="/"
-            className="text-sm text-linkedin-blue font-medium hover:underline"
+            className="inline-block bg-text text-bg px-8 py-3 rounded-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-linkedin-blue transition-all"
           >
             ← Back to Netwearing
           </Link>
