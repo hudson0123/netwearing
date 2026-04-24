@@ -1,10 +1,18 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useCart } from '@/lib/CartContext';
+import { useEffect } from 'react';
 
 export default function ConfirmationPage() {
   const router = useRouter();
-  const paymentIntentId = router.query.payment_intent as string | undefined;
+  const { clearCart } = useCart();
+  const { payment_intent } = router.query;
+  const paymentIntentId = typeof payment_intent === 'string' ? payment_intent : null;
+
+  useEffect(() => {
+    clearCart();
+  }, [clearCart]);
 
   return (
     <>

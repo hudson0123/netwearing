@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { useState, FormEvent } from 'react';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { stripePromise } from '@/lib/stripeClient';
@@ -65,17 +66,6 @@ function CheckoutForm({
             },
           },
         },
-        shipping: {
-          name: customerName,
-          address: {
-            line1: shipping.line1,
-            line2: shipping.line2 || undefined,
-            city: shipping.city,
-            state: shipping.state,
-            postal_code: shipping.postal_code,
-            country: shipping.country,
-          },
-        },
       },
       redirect: 'if_required',
     });
@@ -98,7 +88,7 @@ function CheckoutForm({
            Part 2: Application Processing Fee
         </h3>
         <div className="border-2 border-border rounded-sm p-4 bg-surface">
-          <PaymentElement />
+          <PaymentElement options={{ fields: { shipping: 'never' } }} />
         </div>
       </div>
 
@@ -227,7 +217,15 @@ export default function CheckoutPage() {
           <div className="max-w-[640px] mx-auto">
             {/* Checkout form */}
             <div className="bg-surface border-2 border-border shadow-sm rounded-sm p-6 sm:p-8">
-              {!started ? (
+              {items.length === 0 ? (
+                <div className="text-center py-12">
+                  <h2 className="text-lg font-bold mb-4 uppercase tracking-widest">DOCKET EMPTY</h2>
+                  <p className="text-muted text-sm mb-8 leading-relaxed">No professional materialization items found. Please return to the registry to select your credentials.</p>
+                  <Link href="/" className="inline-block bg-text text-bg px-8 py-3 rounded-sm font-mono text-xs font-bold uppercase tracking-widest hover:bg-linkedin-blue transition-all">
+                    ← Return to Home
+                  </Link>
+                </div>
+              ) : !started ? (
                 <PreCheckoutForm
                   onSubmit={initPayment}
                   loading={initializing}

@@ -17,37 +17,50 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Parse multipart form data manually
-    const chunks: Buffer[] = [];
-    for await (const chunk of req) {
-      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
-    }
-    const body = Buffer.concat(chunks);
+    console.log('Upload Route: Starting stream capture...');
+    
+    // Read the stream manually with a promise for better reliability
+    const body = await new Promise<Buffer>((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      req.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+      req.on('end', () => resolve(Buffer.concat(chunks)));
+      req.on('error', (err) => reject(err));
+      // Safety timeout after 30 seconds
+      setTimeout(() => reject(new Error('Request stream timed out')), 30000);
+    });
+
+    console.log(`Upload Route: Captured ${body.length} bytes.`);
 
     // Extract boundary from content-type
     const contentType = req.headers['content-type'] || '';
     const boundaryMatch = contentType.match(/boundary=(.+)/);
     if (!boundaryMatch) {
+      console.log('Upload Route: Error - Invalid content type');
       return res.status(400).json({ error: 'Invalid content type' });
     }
     const boundary = boundaryMatch[1];
 
     // Parse the multipart data
     const parts = parseMultipart(body, boundary);
+    console.log(`Upload Route: Parsed ${parts.length} parts.`);
 
-    const orderId = parts.find((p) => p.name === 'orderId')?.value;
+    const orderId = parts.find((p) => p.name === 'orderId')?.value?.trim();
     const filePart = parts.find((p) => p.name === 'file');
 
     if (!orderId || !filePart || !filePart.data) {
+      console.log('Upload Route: Error - Missing orderId or file part');
       return res.status(400).json({ error: 'Missing orderId or file' });
     }
+
+    console.log(`Upload Route: Processing order ${orderId}, file ${filePart.filename}`);
 
     // Send email via Resend
     const adminEmail = process.env.ADMIN_EMAIL;
     if (!adminEmail) {
-      throw new Error('ADMIN_EMAIL is not configured in environment variables');
+      throw new Error('ADMIN_EMAIL is not configured');
     }
 
+    console.log('Upload Route: Sending email via Resend...');
     await resend.emails.send({
       from: 'Netwearing System <onboarding@resend.dev>',
       to: adminEmail,
@@ -61,6 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
     });
 
+    console.log('Upload Route: Updating Stripe metadata...');
     // Update Stripe PaymentIntent metadata securely
     await stripe.paymentIntents.update(orderId, {
       metadata: {
@@ -69,9 +83,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
+    console.log('Upload Route: Success!');
     return res.status(200).json({ success: true });
   } catch (err: unknown) {
-    console.error('Upload error:', err);
+    console.error('Upload Route: ERROR:', err);
     const message = err instanceof Error ? err.message : 'Upload failed';
     return res.status(500).json({ error: message });
   }

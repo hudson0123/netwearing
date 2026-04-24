@@ -38,17 +38,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    console.log('Incoming Payment Intent Request Body:', req.body);
     const { items, name, email, linkedinUrl, shipping } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0 || items.length > 50) {
+      console.log('Validation Error: Invalid items payload');
       return res.status(400).json({ error: 'Invalid items payload' });
     }
 
     if (!name || typeof name !== 'string' || name.length > 200 || !email || typeof email !== 'string' || email.length > 200) {
+      console.log('Validation Error: Missing name or email');
       return res.status(400).json({ error: 'Missing or invalid required fields' });
     }
 
     if (!isValidShipping(shipping)) {
+      console.log('Validation Error: Invalid shipping', shipping);
       return res.status(400).json({ error: 'Missing or invalid shipping address' });
     }
 
