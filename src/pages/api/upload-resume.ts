@@ -140,17 +140,25 @@ function parseMultipart(body: Buffer, boundary: string): MultipartPart[] {
   while (start < body.length) {
     const boundaryIndex = body.indexOf(boundaryBuffer, start);
     if (boundaryIndex === -1) break;
-    
-    const sectionStart = boundaryIndex + boundaryBuffer.length;
-    let sectionEnd = body.indexOf(boundaryBuffer, sectionStart);
-    if (sectionEnd === -1) {
-        // Check for closing boundary
-        const closingBoundary = Buffer.from(`--${boundary}--`);
-        const closeIndex = body.indexOf(closingBoundary, start);
-        if (closeIndex !== -1) sectionEnd = closeIndex;
-        else break;
+
+    const afterBoundary = boundaryIndex + boundaryBuffer.length;
+
+    // The closing boundary is "--<boundary>--": if the two bytes after the
+    // matched "--<boundary>" are also "--", this is the terminator and there
+    // are no further parts. Without this check, indexOf finds the same
+    // terminator on every iteration and the loop spins forever.
+    if (
+      afterBoundary + 1 < body.length &&
+      body[afterBoundary] === 0x2D /* '-' */ &&
+      body[afterBoundary + 1] === 0x2D /* '-' */
+    ) {
+      break;
     }
-    
+
+    const sectionStart = afterBoundary;
+    const sectionEnd = body.indexOf(boundaryBuffer, sectionStart);
+    if (sectionEnd === -1) break;
+
     const section = body.slice(sectionStart, sectionEnd);
     if (section.length === 0) {
         start = sectionEnd;
