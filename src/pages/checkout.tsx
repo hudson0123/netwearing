@@ -16,6 +16,13 @@ interface ShippingAddress {
   country: string;
 }
 
+// Vercel rejects serverless function request bodies over ~4.5MB before our
+// handler runs, so we cap the raw file size below that to leave headroom for
+// multipart overhead.
+const MAX_RESUME_BYTES = 4 * 1024 * 1024;
+const RESUME_TOO_LARGE_MESSAGE =
+  'Résumé exceeds the 4MB upload limit. Please attach a smaller file.';
+
 function CheckoutForm({
   subtotal,
   customerName,
@@ -381,7 +388,12 @@ function PreCheckoutForm({
                 e.preventDefault();
                 setDragActive(false);
                 const f = e.dataTransfer.files[0];
-                if (f && (f.type === 'application/pdf' || f.type.includes('msword') || f.size < 10000000)) {
+                if (!f) return;
+                if (f.size > MAX_RESUME_BYTES) {
+                    setValidationError(RESUME_TOO_LARGE_MESSAGE);
+                    return;
+                }
+                if (f.type === 'application/pdf' || f.type.includes('msword')) {
                     setResumeFile(f);
                     setValidationError('');
                 }
@@ -398,7 +410,14 @@ function PreCheckoutForm({
                 disabled={loading}
                 onChange={(e) => {
                     const f = e.target.files?.[0];
-                    if (f) setResumeFile(f);
+                    if (!f) return;
+                    if (f.size > MAX_RESUME_BYTES) {
+                        setValidationError(RESUME_TOO_LARGE_MESSAGE);
+                        e.target.value = '';
+                        return;
+                    }
+                    setValidationError('');
+                    setResumeFile(f);
                 }}
               />
               
