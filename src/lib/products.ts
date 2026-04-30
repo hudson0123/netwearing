@@ -16,7 +16,7 @@ export const products: Product[] = [
     name: 'The resume Shirt',
     tagline: 'Your name on the front. Your entire professional history on the back.',
     description: '',
-    price: 100, // $1.00
+    price: 3500, // $35.00
     sizes: ['S', 'M', 'L', 'XL', 'XXL'],
     skills: [
       'Leadership',
