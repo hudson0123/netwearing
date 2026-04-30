@@ -73,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log(`Upload Route: Sending comprehensive docket to ${adminEmail}...`);
-    await resend.emails.send({
+    const { data: sendResult, error: sendError } = await resend.emails.send({
       from: 'Netwearing System <system@upload.netwearing.com>',
       to: adminEmail,
       subject: `[DOCKET] New Candidate Materialization: ${customerName}`,
@@ -99,6 +99,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       ],
     });
+
+    if (sendError) {
+      console.error('Upload Route: Resend rejected the send:', sendError);
+      throw new Error(`Resend rejected: ${sendError.message ?? 'unknown error'}`);
+    }
+    console.log(`Upload Route: Resend accepted send, id=${sendResult?.id ?? 'no id returned'}`);
 
     console.log('Upload Route: Updating Stripe metadata...');
     // Update Stripe PaymentIntent metadata securely
