@@ -17,7 +17,7 @@ export default function Footer() {
           </div>
           <p className="text-xs opacity-40 max-w-xl mx-auto leading-relaxed">
             © 2026 Netwearing™ · Not affiliated with LinkedIn. · Not responsible for
-            unintended career outcomes. · All testimonials are fictional. Results may
+            unintended career outcomes. Results may
             vary. Synergy not guaranteed.
           </p>
         </div>
