@@ -14,7 +14,7 @@ export default function Home() {
           Dress for the job you&apos;ll <em className="italic text-linkedin-blue">never</em> get.
         </h1>
         <p className="text-sm text-muted">
-          Put your résumé on a shirt. Let your outfit do the networking.
+          Put your resume on a shirt. Let your outfit do the networking.
         </p>
       </section>
 

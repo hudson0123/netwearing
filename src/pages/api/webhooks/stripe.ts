@@ -81,7 +81,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   <p style="margin: 0; font-weight: bold;">Shipping Information:</p>
                   <pre style="margin: 5px 0;">${shippingInfo}</pre>
                 </div>
-                <p><em>Note: This candidate did not attach a résumé; they verified via LinkedIn instead.</em></p>
+                <p><em>Note: This candidate did not attach a resume; they verified via LinkedIn instead.</em></p>
               </div>
             `,
           });

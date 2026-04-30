@@ -186,7 +186,7 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
               {product.requiresUpload && (
                 <div className="mt-4 px-4 py-3 bg-linkedin-light/50 rounded-lg border border-linkedin-light">
                   <p className="text-xs text-linkedin-dark font-semibold">
-                    📄 Résumé upload required at checkout — we&apos;ll print your actual qualifications on the shirt.
+                    📄 resume upload required at checkout — we&apos;ll print your actual qualifications on the shirt.
                   </p>
                 </div>
               )}

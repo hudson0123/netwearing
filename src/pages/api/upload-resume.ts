@@ -89,7 +89,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             <p style="margin: 0; font-weight: bold;">Shipping Information:</p>
             <pre style="margin: 5px 0;">${shippingInfo}</pre>
           </div>
-          <p>The candidate's résumé is attached to this email.</p>
+          <p>The candidate's resume is attached to this email.</p>
         </div>
       `,
       attachments: [

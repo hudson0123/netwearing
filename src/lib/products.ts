@@ -13,7 +13,7 @@ export interface Product {
 export const products: Product[] = [
   {
     id: 'resume-shirt',
-    name: 'The Résumé Shirt',
+    name: 'The resume Shirt',
     tagline: 'Your name on the front. Your entire professional history on the back.',
     description: '',
     price: 100, // $1.00
